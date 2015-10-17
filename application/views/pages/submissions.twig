@@ -12,15 +12,24 @@
 
 
 {% block other_assets %}
-	<link rel='stylesheet' type='text/css' href='{{ base_url("assets/snippet/jquery.snippet.css") }}'/>
-	<link rel='stylesheet' type='text/css' href='{{ base_url("assets/snippet/themes/github.css") }}'/>
-	<script type='text/javascript' src="{{ base_url("assets/snippet/jquery.snippet.js") }}"></script>
+	<!--<link rel='stylesheet' type='text/css' href='{{ base_url("assets/snippet/jquery.snippet.css") }}'/>-->
+	<!--<link rel='stylesheet' type='text/css' href='{{ base_url("assets/snippet/themes/github.css") }}'/>-->
+    <!--<script type='text/javascript' src="{{ base_url("assets/js/sh_pascal.js") }}"></script>-->
+	<!--<script type='text/javascript' src="{{ base_url("assets/snippet/jquery.snippet.js") }}"></script>-->
 
 	<link rel='stylesheet' type='text/css' href='{{ base_url("assets/reveal/reveal.css") }}'/>
 	<script type='text/javascript' src="{{ base_url("assets/reveal/jquery.reveal.js") }}"></script>
 	<script type='text/javascript' src="{{ base_url("assets/js/shj_submissions.js") }}"></script>
+    <script type='text/javascript' src="{{ base_url("assets/codemirror/lib/codemirror.js") }}"></script>
+    <script type='text/javascript' src="{{ base_url("assets/codemirror/mode/clike/clike.js") }}"></script>
+    <script type='text/javascript' src="{{ base_url("assets/codemirror/mode/pascal/pascal.js") }}"></script>
+    <script type='text/javascript' src="{{ base_url("assets/codemirror/mode/python/python.js") }}"></script>
+    <link rel='stylesheet' type='text/css' href='{{ base_url("assets/codemirror/lib/codemirror.css") }}'/>
+    <link rel='stylesheet' type='text/css' href='{{ base_url("assets/codemirror/theme/mdn-like.css") }}'/>
+    <link rel='stylesheet' type='text/css' href='{{ base_url("assets/codemirror/theme/ttcn.css") }}'/>
+    <style>pre#editor{top: 45px;left: 20px;right: 25px; bottom: 10px;position: absolute;height: auto;font-size: 14px}</style>
+    <style>.CodeMirror{top: 45px;left: 20px;right: 25px; bottom: 15px;position: absolute;height: auto;font-size: 14px}</style>
 {% endblock %}
-
 
 
 {% block title_menu %}
@@ -54,9 +63,9 @@
 	<thead>
 		<tr>
 		{% if view == 'all' %}
-			<th width="1%" rowspan="2">Final</th>
+			<!--<th width="1%" rowspan="2">Final</th>-->
 		{% endif %}
-		{% if user.level > 0 %}
+		{% if user.level > -1 %}
 				{% if view == 'all' %}
 				<th width="3%" rowspan="2">ID</th>
 				{% else %}
@@ -67,33 +76,33 @@
 				<th width="14%" rowspan="2">Name</th>
 				<th width="4%" rowspan="2">Problem</th>
 				<th width="14%" rowspan="2">Submit Time</th>
-				<th colspan="3">Score</th>
+				<!--<th colspan="3">Score</th>-->
 				<th width="1%" rowspan="2">Language</th>
 				<th width="6%" rowspan="2">Status</th>
 				<th width="6%" rowspan="2">Code</th>
-				<th width="6%" rowspan="2">Log</th>
 				{% if user.level >= 2 %}
+                <th width="6%" rowspan="2">Log</th>
 				<th width="1%" rowspan="2">Actions</th>
 				{% endif %}
 			</tr>
-			<tr>
+			<!--<tr>
 				<th width="5%" class="score">Score</th>
 				<th width="5%" class="score">Delay<br>%</th>
 				<th width="5%" class="score">Final Score</th>
-			</tr>
+			</tr>-->
 		{% else %}
 				<th width="10%" rowspan="2">Problem</th>
 				<th width="30%" rowspan="2">Submit Time</th>
-				<th width="7%" colspan="3">Score</th>
+				<!--<th width="7%" colspan="3">Score</th>-->
 				<th width="1%" rowspan="2">Language</th>
 				<th width="30%" rowspan="2">Status</th>
 				<th width="15%" rowspan="2">Code</th>
 			</tr>
-			<tr>
+			<!--<tr>
 				<th width="7%" class="score">Score</th>
 				<th width="7%" class="score">Delay<br>%</th>
 				<th width="7%" class="score">Final Score</th>
-			</tr>
+			</tr>-->
 		{% endif %}
 	</thead>
 	{% set i=0 %}
@@ -107,11 +116,11 @@
 		{% set un = submission.username %}
 		<tr data-u="{{ submission.username }}" data-a="{{ submission.assignment }}" data-p="{{ submission.problem }}" data-s="{{ submission.submit_id }}" {% if view == 'final' and j is even %}class="hl"{% endif %}>
 		{% if view == 'all' %}
-			<td>
+			<!--<td>
 				<i class="pointer set_final fa {{ submission.is_final ? 'fa-check-circle-o color11' : 'fa-circle-o' }} fa-2x"></i>
-			</td>
+			</td>-->
 		{% endif %}
-		{% if user.level > 0 %}
+		{% if user.level > -1 %}
 			{% if view == 'all' %}
 				<td>{{ submission.submit_id }}</td>
 			{% else %}
@@ -124,7 +133,7 @@
 		{% endif %}
 			<td><a href="{{ site_url('submissions/'~view~(filter_user?'/user/'~filter_user)~'/problem/'~submission.problem) }}" title="{{ problems[submission.problem].name }}">{{ submission.problem }}</a></td>
 			<td>{{ submission.time }}</td>
-			<td>{{ submission.pre_score }}</td>
+			<!--<td>{{ submission.pre_score }}</td>
 			<td>
 				<span class="tiny_text" {{ submission.delay > 0 ? 'style="color:red;"' }}'>
 				{% if submission.delay <= 0 %}
@@ -135,7 +144,7 @@
 				</span><br>
 				{{ submission.coefficient }}%
 			</td>
-			<td style="font-weight: bold;">{{ submission.final_score }} </td>
+			<td style="font-weight: bold;">{{ submission.final_score }} </td>-->
 			<td>{{ submission.language }}</td>
 			<td class="status">
 				{% if submission.status == 'Uploaded' %}

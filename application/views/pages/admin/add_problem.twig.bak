@@ -1,0 +1,114 @@
+{#
+ # Sharif Judge
+ # file: add_assignment.twig
+ # author: Mohammad Javad Naderi <mjnaderi@gmail.com>
+ #}
+{% set selected = 'problems' %}
+{% extends 'templates/base.twig' %}
+{% block icon %}{{ edit ? 'fa-edit' : 'fa-plus-square' }}{% endblock %}
+{% block title %}{{ edit ? 'Edit' : 'Add' }} Problem{% endblock %}
+{% block head_title %}{{ edit ? 'Edit' : 'Add' }} Problem{% endblock %}
+
+
+
+{% block other_assets %}
+<script type='text/javascript' src="{{ base_url('assets/js/taboverride.min.js') }}"></script>
+<script>
+	$(document).ready(function(){
+		tabOverride.set(document.getElementsByTagName('textarea'));
+	});
+    
+</script>
+<script type="text/javascript" src="{{ base_url('assets/js/jquery-ui-timepicker-addon.js') }}"></script>
+<script type="text/javascript" src="{{ base_url('assets/ckeditor/ckeditor.js') }}"></script>
+{% endblock %}
+
+
+
+{% block title_menu %}
+{% endblock %}
+
+
+
+{% block main_content %}
+{% set msgclasses = {'success': 'shj_g', 'notice': 'shj_o', 'error': 'shj_r'} %}
+{% for message in messages %}
+	<p class="{{ msgclasses[message.type] }}">{{ message.text }}</p>
+{% endfor %}
+
+{% if edit %}
+<p>
+	<i class="fa fa-info-circle fa-lg color8"></i> If you don't want to change tests file, just do not upload its file.
+</p>
+{% endif %}
+
+{{ form_open_multipart(edit ? 'problems/edit/'~problem.id : 'problems/add') }}
+<div class="panel_left">
+	<p class="input_p clear">
+		<label for="form_tests_desc">Tests and Descriptions (zip file)<br>
+			<span class="form_comment">
+				<a href="https://github.com/mjnaderi/Sharif-Judge/blob/docs/v1.4/tests_structure.md" target="_blank">Use this structure</a>
+			</span>
+		</label>
+        <input id="form_tests_desc" type="file" name="tests_desc" class="sharif_input medium"/>
+	</p>
+    <br>
+    <textarea name="ckeditor" id="ckeditor" class="sharif_input" rows="30" cols="75" style="width:100%">{{ problem.description }}</textarea>
+    <script>
+        CKEDITOR.replace('ckeditor'£¬{
+	filebrowserBrowseUrl: '/assets/ckfinder/ckfinder.html',
+	filebrowserUploadUrl: '/assets/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files'});
+    </script>
+    <br>
+    <table id="problems_table">
+	<thead>
+	<tr>
+		<th rowspan="2">Name</th>
+		<th rowspan="2">Score</th>
+		<th colspan="4" style="border-bottom: 1px solid #BDBDBD">Time Limit (ms)</th>
+		<th rowspan="2">Memory<br>Limit (kB)</th>
+		<th rowspan="2">Allowed<br>Languages (<a target="_blank" href="https://github.com/mjnaderi/Sharif-Judge/blob/docs/v1.4/add_assignment.md#allowed-languages">?</a>)</th>
+		<th rowspan="2">Diff<br>Command (<a target="_blank" href="https://github.com/mjnaderi/Sharif-Judge/blob/docs/v1.4/add_assignment.md#diff-command">?</a>)</th>
+		<th rowspan="2">Diff<br>Argument (<a target="_blank" href="https://github.com/mjnaderi/Sharif-Judge/blob/docs/v1.4/add_assignment.md#diff-arguments">?</a>)</th>
+		<th rowspan="2">Upload<br>Only (<a target="_blank" href="https://github.com/mjnaderi/Sharif-Judge/blob/docs/v1.4/add_assignment.md#upload-only">?</a>)</th>
+		<th rowspan="2">Hard</th>
+	</tr>
+	<tr>
+		<th>C/C++</th><th>Python</th><th>Java</th><th>Pascal</th>
+	</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><input type="text" name="name" class="sharif_input short" value="{{ problem.name }}"/></td>
+			<td><input type="text" name="score" class="sharif_input tiny2" value="{{ problem.score }}"/></td>
+			<td><input type="text" name="c_time_limit" class="sharif_input tiny2" value="{{ problem.c_time_limit }}"/></td>
+			<td><input type="text" name="python_time_limit" class="sharif_input tiny2" value="{{ problem.python_time_limit }}"/></td>
+			<td><input type="text" name="java_time_limit" class="sharif_input tiny2" value="{{ problem.java_time_limit }}"/></td>
+            <td><input type="text" name="pascal_time_limit" class="sharif_input tiny2" value="{{ problem.pascal_time_limit }}"/></td>
+			<td><input type="text" name="memory_limit" class="sharif_input tiny" value="{{ problem.memory_limit }}"/></td>
+			<td><input type="text" name="languages" class="sharif_input short2" value="{{ problem.allowed_languages }}"/></td>
+			<td><input type="text" name="diff_cmd" class="sharif_input tiny" value="{{ problem.diff_cmd }}"/></td>
+			<td><input type="text" name="diff_arg" class="sharif_input tiny" value="{{ problem.diff_arg }}"/></td>
+			<td><input type="checkbox" name="is_upload_only" class="check" value="{{ problem.id }}" {{ problem.is_upload_only ? 'checked' }}/></td>
+            <td><input type="text" name="hard" class="sharif_input tiny2" value="{{ problem.hard }}"/></td>
+		</tr>
+	</tbody>
+</table>
+    <p class="input_p">
+	<input type="submit" value="{{ edit ? 'Edit' : 'Add' }} Problem" class="sharif_input"/>
+</p>
+</div>
+
+{{ form_error('name[]', '<div class="shj_error">', '</div>') }}
+{{ form_error('score[]', '<div class="shj_error">', '</div>') }}
+{{ form_error('c_time_limit[]', '<div class="shj_error">', '</div>') }}
+{{ form_error('python_time_limit[]', '<div class="shj_error">', '</div>') }}
+{{ form_error('java_time_limit[]', '<div class="shj_error">', '</div>') }}
+{{ form_error('pascal_time_limit[]', '<div class="shj_error">', '</div>') }}
+{{ form_error('memory_limit[]', '<div class="shj_error">', '</div>') }}
+{{ form_error('languages[]', '<div class="shj_error">', '</div>') }}
+{{ form_error('diff_cmd[]', '<div class="shj_error">', '</div>') }}
+{{ form_error('diff_arg[]', '<div class="shj_error">', '</div>') }}
+
+</form>
+{% endblock %}  {# main_content #}

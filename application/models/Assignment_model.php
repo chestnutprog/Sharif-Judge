@@ -76,6 +76,7 @@ class Assignment_model extends CI_Model
 		$c_tl = $this->input->post('c_time_limit');
 		$py_tl = $this->input->post('python_time_limit');
 		$java_tl = $this->input->post('java_time_limit');
+        $pascal_tl = $this->input->post('pascal_time_limit');
 		$ml = $this->input->post('memory_limit');
 		$ft = $this->input->post('languages');
 		$dc = $this->input->post('diff_cmd');
@@ -98,10 +99,10 @@ class Assignment_model extends CI_Model
 				elseif ($item2 === 'pdf')
 					$item = 'PDF';
 				$item2 = strtolower($item);
-				if ( ! in_array($item2, array('c','c++','python 2','python 3','java','zip','pdf')))
+				if ( ! in_array($item2, array('c','c++','python 2','python 3','java','zip','pdf','free pascal')))
 					continue;
 				// If the problem is not Upload-Only, its language should be one of {C,C++,Python 2, Python 3,Java}
-				if ( ! in_array($i, $uo) && ! in_array($item2, array('c','c++','python 2','python 3','java')) )
+				if ( ! in_array($i, $uo) && ! in_array($item2, array('c','c++','python 2','python 3','java','free pascal')) )
 					continue;
 				$ft[$i-1] .= $item.",";
 			}
@@ -115,6 +116,7 @@ class Assignment_model extends CI_Model
 				'c_time_limit' => $c_tl[$i-1],
 				'python_time_limit' => $py_tl[$i-1],
 				'java_time_limit' => $java_tl[$i-1],
+                'pascal_time_limit' => $pascal_tl[$i-1],
 				'memory_limit' => $ml[$i-1],
 				'allowed_languages' => $ft[$i-1],
 				'diff_cmd' => $dc[$i-1],
@@ -231,10 +233,14 @@ class Assignment_model extends CI_Model
 	 */
 	public function all_problems($assignment_id)
 	{
-		$result = $this->db->order_by('id')->get_where('problems', array('assignment'=>$assignment_id))->result_array();
-		$problems = array();
-		foreach ($result as $row)
-			$problems[$row['id']] = $row;
+		$result = $this->db->order_by('id')->get_where('race', array('racenum'=>$assignment_id))->result_array();
+        $problems = array();
+        $i=0;
+		foreach ($result as $row){
+            $temp = $this->db->order_by('id')->get_where('problems', array('id'=>$row["problemnum"]))->result_array();
+            $problems[$i]=$temp[0];
+            $i++;
+        }
 		return $problems;
 	}
 
@@ -253,9 +259,9 @@ class Assignment_model extends CI_Model
 	 * @param $problem_id
 	 * @return mixed
 	 */
-	public function problem_info($assignment_id, $problem_id)
+	public function problem_info($problem_id)
 	{
-		return $this->db->get_where('problems', array('assignment'=>$assignment_id, 'id'=>$problem_id))->row_array();
+		return $this->db->get_where('problems', array('id'=>$problem_id))->row_array();
 	}
 
 

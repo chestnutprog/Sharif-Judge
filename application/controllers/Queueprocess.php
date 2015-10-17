@@ -54,21 +54,19 @@ class Queueprocess extends CI_Controller
 
 			$submit_id = $queue_item['submit_id'];
 			$username = $queue_item['username'];
-			$assignment = $queue_item['assignment'];
-			$assignment_info = $this->assignment_model->assignment_info($assignment);
-			$problem = $this->assignment_model->problem_info($assignment, $queue_item['problem']);
+			//$assignment = $queue_item['assignment'];
+			//$assignment_info = $this->assignment_model->assignment_info($assignment);
+			$problem = $this->assignment_model->problem_info($queue_item['problem']);
 			$type = $queue_item['type'];  // $type can be 'judge' or 'rejudge'
 
-			$submission = $this->submit_model->get_submission($username, $assignment, $problem['id'], $submit_id);
-
-			$file_type = $submission['file_type'];
+			$submission = $this->submit_model->get_submission($username, $problem['id'], $submit_id);
 			$file_extension = filetype_to_extension($file_type);
 			$raw_filename = $submission['file_name'];
 			$main_filename = $submission['main_file_name'];
-
-			$assignments_dir = rtrim($this->settings_model->get_setting('assignments_root'), '/');
+            $file_type = $submission['file_type'];
+			$problems_dir = rtrim($this->settings_model->get_setting('problems_root'), '/');
 			$tester_path = rtrim($this->settings_model->get_setting('tester_path'), '/');
-			$problemdir = $assignments_dir."/assignment_$assignment/p".$problem['id'];
+			$problemdir = $problems_dir."/p".$problem['id'];
 			$userdir = "$problemdir/$username";
 			//$the_file = "$userdir/$raw_filename.$file_extension";
 
@@ -85,14 +83,16 @@ class Queueprocess extends CI_Controller
 			elseif ($file_type === 'py3')
 				$op4 = $this->settings_model->get_setting('enable_py3_shield');
 			$op5 = $this->settings_model->get_setting('enable_java_policy');
-			$op6 = $assignment_info['javaexceptions'];
+			$op6 = 1;
 
 			if ($file_type === 'c' OR $file_type === 'cpp')
-				$time_limit = $problem['c_time_limit']/1000;
+				$time_limit = $problem['c_time_limit'];
 			elseif ($file_type === 'java')
-				$time_limit = $problem['java_time_limit']/1000;
-			elseif ($file_extension === 'py')
-				$time_limit = $problem['python_time_limit']/1000;
+				$time_limit = $problem['java_time_limit'];
+			elseif ($file_extension === 'py'||$file_type === 'py3'||$file_type === 'py2')
+				$time_limit = $problem['python_time_limit'];
+      elseif ($file_type === 'fpc' OR $file_extension === 'pas' )
+				$time_limit = $problem['pascal_time_limit'];
 			$time_limit = round($time_limit, 3);
 			$time_limit_int = floor($time_limit) + 1;
 
@@ -102,21 +102,17 @@ class Queueprocess extends CI_Controller
 			$output_size_limit = $this->settings_model->get_setting('output_size_limit') * 1024;
 
 			$cmd = "cd $tester_path;\n./tester.sh $problemdir ".escapeshellarg($username).' '.escapeshellarg($main_filename).' '.escapeshellarg($raw_filename)." $file_type $time_limit $time_limit_int $memory_limit $output_size_limit $diff_cmd $diff_arg $op1 $op2 $op3 $op4 $op5 $op6";
-
 			file_put_contents($userdir.'/log', $cmd);
-
 			///////////////////////////////////////
 			// Running tester (judging the code) //
 			///////////////////////////////////////
 			putenv('LANG=en_US.UTF-8');
 			$output = trim(shell_exec($cmd));
 
-
 			// Deleting the jail folder, if still exists
 			shell_exec("cd $tester_path; rm -rf jail*");
-
 			// Saving judge result
-			if ( is_numeric($output) || $output === 'Compilation Error' || $output === 'Syntax Error' )
+			if ( is_numeric($output) || $output === 'Compilation Error' || $output === 'Syntax Error'||$output === 'CE'  )
 			{
 				shell_exec("mv $userdir/result.html $userdir/result-{$submit_id}.html");
 				shell_exec("mv $userdir/log $userdir/log-{$submit_id}");
@@ -124,6 +120,9 @@ class Queueprocess extends CI_Controller
 
 			if (is_numeric($output)) {
 				$submission['pre_score'] = $output;
+                if((10000==$output)&&($type==judge)){
+                    $this->db->where('id',$problem['id'])->update('problems',array('total_ac'=>($problem['total_ac']+1)));
+                }
 				$submission['status'] = 'SCORE';
 			}
 			else {

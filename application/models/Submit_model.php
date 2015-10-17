@@ -20,12 +20,11 @@ class Submit_model extends CI_Model {
 	/**
 	 * Returns table row for a specific submission
 	 */
-	public function get_submission($username, $assignment, $problem, $submit_id)
+	public function get_submission($username, $problem, $submit_id)
 	{
 		$query = $this->db->get_where('submissions',
 			array(
 				'username'=>$username,
-				'assignment'=>$assignment,
 				'problem'=>$problem,
 				'submit_id'=>$submit_id
 			)
@@ -66,12 +65,11 @@ class Submit_model extends CI_Model {
 	// ------------------------------------------------------------------------
 
 
-	public function get_all_submissions($assignment_id, $user_level, $username, $page_number = NULL, $filter_user = NULL, $filter_problem = NULL)
-	{
-		$arr['assignment']=$assignment_id;
-		if ($user_level === 0)
-			$arr['username']=$username;
-		elseif ($filter_user !== NULL)
+	public function get_all_submissions($assignment_id,$user_level, $username, $page_number = NULL, $filter_user = NULL, $filter_problem = NULL)
+	{  
+        if ($assignment_id !== NULL)
+            $arr['assignment']=$assignment_id;
+        if ($filter_user !== NULL)
 			$arr['username'] = $filter_user;
 		if ($filter_problem !== NULL)
 			$arr['problem'] = $filter_problem;
@@ -111,9 +109,9 @@ class Submit_model extends CI_Model {
 	public function count_all_submissions($assignment_id, $user_level, $username, $filter_user = NULL, $filter_problem = NULL)
 	{
 		$arr['assignment']=$assignment_id;
-		if ($user_level === 0)
+		/*if ($user_level === 0)
 			$arr['username']=$username;
-		elseif ($filter_user !== NULL)
+		else*/if ($filter_user !== NULL)
 			$arr['username'] = $filter_user;
 		if ($filter_problem !== NULL)
 			$arr['problem'] = $filter_problem;
@@ -124,19 +122,19 @@ class Submit_model extends CI_Model {
 	// ------------------------------------------------------------------------
 
 
-	public function set_final_submission($username, $assignment, $problem, $submit_id)
+	public function set_final_submission($username, $problem, $submit_id)
 	{
 
 		$this->db->where(array(
 			'is_final' => 1,
 			'username' => $username,
-			'assignment' => $assignment,
+			//'assignment' => $assignment,
 			'problem' => $problem,
 		))->update('submissions', array('is_final'=>0));
 
 		$this->db->where(array(
 			'username' => $username,
-			'assignment' => $assignment,
+			//'assignment' => $assignment,
 			'problem' => $problem,
 			'submit_id' => $submit_id,
 		))->update('submissions', array('is_final'=>1));

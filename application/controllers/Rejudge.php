@@ -17,7 +17,7 @@ class Rejudge extends CI_Controller
 			redirect('login');
 		if ( $this->user->level <= 1) // permission denied
 			show_404();
-		$this->problems = $this->assignment_model->all_problems($this->user->selected_assignment['id']);
+		$this->problems = $this->problem_model->all_problems();
 	}
 
 

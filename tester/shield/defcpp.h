@@ -11,6 +11,6 @@ e.g. If you want to disallow goto, add this line:
 
 */
 
-#define fork errorNo1       //Fork is not allowed
-#define clone errorNo2      //Clone is not allowed
-#define sleep errorNo3      //Sleep is not allowed
+#define fork errorNo10       //Fork is not allowed
+#define clone errorNo11      //Clone is not allowed
+#define sleep errorNo12      //Sleep is not allowed

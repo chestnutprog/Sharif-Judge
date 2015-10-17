@@ -17,10 +17,11 @@
 	visibility: hidden;
 	top: 50px;
 	left: 50%;
+    bottom:50px;
 	margin-left: -300px;
 	width: 520px;
 	background-color: #fcfcfc;
-	position: fixed; /* changed by mjnaderi from absolute to fixed */
+	position: absolute; /* changed by mjnaderi from absolute to fixed */
 	z-index: 101;
 	padding: 5px 20px 10px;
 	-moz-border-radius: 5px;

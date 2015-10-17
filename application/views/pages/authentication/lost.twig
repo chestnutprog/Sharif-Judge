@@ -3,7 +3,7 @@
  # file: lost.twig
  # author: Mohammad Javad Naderi <mjnaderi@gmail.com>
  #}
-{% set title = 'Lost Password' %}
+{% set title = '密码重设' %}
 {% include 'templates/simple_header.twig' %}
 
 {{ form_open('login/lost') }}
@@ -21,12 +21,12 @@
 					{{ form_error('email', '<div class="shj_error">', '</div>') }}
 				</p>
 				{% if sent %}
-					<div class="shj_ok">We sent you an email containing a link to reset your password.</div>
+					<div class="shj_ok">我们已经将含有密码重设链接的邮件发至您的邮箱</div>
 				{% endif %}
 			</div>
 			<div class="login2">
 				<p style="margin:0;">
-					<a href="{{ site_url('login') }}">Login</a>
+					<a href="{{ site_url('login') }}">登录</a>
 					<input type="submit" value="Reset Password" id="sharif_submit"/>
 				</p>
 			</div>

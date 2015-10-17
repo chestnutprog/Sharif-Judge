@@ -80,11 +80,12 @@ $route['submissions/final']="submissions/the_final";
 $route['submissions/final/(.*)']="submissions/the_final/$1";
 $route['profile/(:num)'] = "profile/index/$1";
 $route['moss/(:num)'] = "moss/index/$1";
-$route['problems/(:num)'] = "problems/index/$1";
-$route['problems/(:num)/(:num)'] = "problems/index/$1/$2";
+$route['problems/(:num)'] = "problems/detail/$1";
+$route['problems/(:num)/(:num)'] = "problems/detail/$1/$2";
 $route['rejudge/(:num)'] = "rejudge/index/$1";
+$route['p(:num)'] = "problems/detail/$1/";
 $route['404_override'] = '';
-$route['translate_uri_dashes'] = FALSE;
+$route['translate_uri_dashes'] = TRUE;
 
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */

@@ -61,16 +61,16 @@ class Queue_model extends CI_Model
 
 		$submit_info['is_final'] = 0;
 		$submit_info['status'] = 'PENDING';
-
-		$this->db->insert('submissions', $submit_info);
-
+        
+        $this->db->insert('submissions', $submit_info);
+/*
 		$this->db->insert('queue', array(
-			'submit_id' => $submit_info['submit_id'],
+			'submit_id' => $this->db->insert_id(),
 			'username' => $submit_info['username'],
 			'assignment' => $submit_info['assignment'],
 			'problem' => $submit_info['problem'],
 			'type' => 'judge'
-		));
+		));*/
 	}
 
 
@@ -130,7 +130,6 @@ class Queue_model extends CI_Model
 		$problem = $this->assignment_model->problem_info($submission['assignment'], $submission['problem']);
 		if ($problem['is_upload_only'])
 			return;
-
 		// Changing the status of submission to PENDING
 		$this->db->where(array(
 			'submit_id' => $submission['submit_id'],
@@ -177,7 +176,7 @@ class Queue_model extends CI_Model
 		$this->db->delete('queue', array(
 			'submit_id' => $submit_id,
 			'username' => $username,
-			'assignment' => $assignment,
+			//'assignment' => $assignment,
 			'problem' => $problem
 		));
 	}
@@ -203,7 +202,7 @@ class Queue_model extends CI_Model
 			$this->db->where(array(
 				'is_final' => 1,
 				'username' => $submission['username'],
-				'assignment' => $submission['assignment'],
+				//'assignment' => $submission['assignment'],
 				'problem' => $submission['problem'],
 			))->update('submissions', array('is_final'=>0));
 			$arr['is_final'] = 1;
@@ -212,10 +211,9 @@ class Queue_model extends CI_Model
 		$this->db->where(array(
 			'submit_id' => $submission['submit_id'],
 			'username' => $submission['username'],
-			'assignment' => $submission['assignment'],
+			//'assignment' => $submission['assignment'],
 			'problem' => $submission['problem']
 		))->update('submissions', $arr);
-
 		// update scoreboard:
 		$this->load->model('scoreboard_model');
 		$this->scoreboard_model->update_scoreboard($submission['assignment']);

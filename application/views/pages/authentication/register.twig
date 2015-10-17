@@ -3,7 +3,7 @@
  # file: register.twig
  # author: Mohammad Javad Naderi <mjnaderi@gmail.com>
  #}
-{% set title = 'Register' %}
+{% set title = '注册' %}
 {% include 'templates/simple_header.twig' %}
 
 {{ form_open('login/register') }}
@@ -17,13 +17,13 @@
 		<div class="login1">
 			{% if registration_code_required %}
 			<p>
-				<label for="form_reg_code">Registration Code</label><br/>
+				<label for="form_reg_code">邀请码</label><br/>
 				<input id="form_reg_code" type="text" name="registration_code" required="required" autofocus="autofocus" class="sharif_input" value="{{ set_value('registration_code') }}"/>
 				{{ form_error('registration_code', '<div class="shj_error">', '</div>') }}
 			</p>
 			{% endif %}
 			<p>
-				<label for="form_username">Username</label><br/>
+				<label for="form_username">用户名</label><br/>
 				<input id="form_username" type="text" name="username" required="required" pattern="[0-9A-Za-z]{3,20}" title="The Username field must be between 3 and 20 characters in length, and contain only alpha-numeric characters" class="sharif_input" value="{{ set_value('username') }}"/>
 				{{ form_error('username', '<div class="shj_error">', '</div>') }}
 			</p>
@@ -33,20 +33,20 @@
 				{{ form_error('email','<div class="shj_error">','</div>') }}
 			</p>
 			<p>
-				<label for="form_password">Password</label><br/>
-				<input id="form_password" type="password" name="password" required="required" pattern=".{6,200}" title="The Password field must be at least 6 characters in length" class="sharif_input"/>
+				<label for="form_password">密码</label><br/>
+				<input id="form_password" type="password" name="password" required="required" pattern=".{6,200}" title="密码至少6位" class="sharif_input"/>
 				{{ form_error('password','<div class="shj_error">','</div>') }}
 			</p>
 			<p>
-				<label for="form_password_2">Password, Again</label><br/>
+				<label for="form_password_2">确认密码</label><br/>
 				<input id="form_password_2" type="password" name="password_again" required="required" pattern=".{6,200}" title="The Password Confirmation field must be at least 6 characters in length" class="sharif_input"/>
 				{{ form_error('password_again','<div class="shj_error">','</div>') }}
 			</p>
 		</div>
 		<div class="login2">
 			<p style="margin:0;">
-				<a href="{{ site_url('login') }}">Login</a>
-				<input type="submit" value="Register" id="sharif_submit"/>
+				<a href="{{ site_url('login') }}">登录</a>
+				<input type="submit" value="注册" id="sharif_submit"/>
 			</p>
 		</div>
 	</div>

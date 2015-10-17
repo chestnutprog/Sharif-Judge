@@ -1,117 +1,69 @@
 {#
  # Sharif Judge
- # file: problems.twig
- # author: Kelvin Ng <kelvin9302104@gmail.com>
+ # file: assignments.twig
+ # author: Mohammad Javad Naderi <mjnaderi@gmail.com>
  #}
 {% set selected = 'problems' %}
 {% extends 'templates/base.twig' %}
 {% block icon %}fa-puzzle-piece{% endblock %}
-{% block title %}{{ all_problems[problem.id].name }}{% endblock %}
-{% block head_title %}Problem {{ problem.id }}{% endblock %}
-
-
-
-{% block other_assets %}
-<link rel='stylesheet' type='text/css' href='{{ base_url("assets/snippet/jquery.snippet.css") }}'/>
-<link rel='stylesheet' type='text/css' href='{{ base_url("assets/snippet/themes/github.css") }}'/>
-<script type='text/javascript' src="{{ base_url("assets/snippet/jquery.snippet.js") }}"></script>
-<script>
-$(document).ready(function(){
-	// Syntax highlighting increases the page's height, and we need to update the scroll-bar
-	$('.problem_description').resize(function(){
-		$('.scroll-wrapper').nanoScroller();
-	});
-	// Fix text directions for rtl text
-	$.each($('.problem_description [dir="auto"]'), function(i, element){
-		if (getComputedStyle(element).direction == 'rtl')
-		{
-			$(element).css('direction', 'rtl');
-			$(element).parent('ul, ol').css('direction', 'rtl');
-		}
-	});
-	// Syntax highlighting
-	$('pre code.language-c').parent().snippet('c', {style: shj.color_scheme});
-	$('pre code.language-cpp').parent().snippet('cpp', {style: shj.color_scheme});
-	$('pre code.language-python').parent().snippet('python', {style: shj.color_scheme});
-	$('pre code.language-java').parent().snippet('java', {style: shj.color_scheme});
-});
-</script>
-{% endblock %}
+{% block title %}Problems{% endblock %}
+{% block head_title %}Problems{% endblock %}
 
 
 
 {% block title_menu %}
 {% if user.level >= 2 %}
-<span class="title_menu_item"><a href="{{ site_url("problems/edit/md/#{description_assignment.id}/#{problem.id}") }}"><i class="fa fa-pencil color2"></i> Edit Markdown</a></span>
-<span class="title_menu_item"><a href="{{ site_url("problems/edit/html/#{description_assignment.id}/#{problem.id}") }}"><i class="fa fa-pencil color10"></i> Edit HTML</a></span>
-<span class="title_menu_item"><a href="{{ site_url("problems/edit/plain/#{description_assignment.id}/#{problem.id}") }}"><i class="fa fa-pencil color8"></i> Edit Plain HTML</a></span>
-{% if problem.has_pdf %}
-<span class="title_menu_item"><a href="{{ site_url("assignments/pdf/#{description_assignment.id}/#{problem.id}") }}"><i class="fa fa-download color1"></i> PDF</a></span>
-{% endif %}
+<span class="title_menu_item"><a href="{{ site_url('problems/add') }}"><i class="fa fa-plus color8"></i> Add</a></span>
 {% endif %}
 {% endblock %}
 
 
 
 {% block main_content %}
-<div class="problem_description">
-	{{ problem.description|raw }}
-</div>
+{% set msgclasses = {'success': 'shj_g', 'notice': 'shj_o', 'error': 'shj_r'} %}
 
-<div id="right_sidebar">
-
-	<div class="problems_widget">
-		<p dir="auto"><i class="fa fa-file-text fa-lg color9"></i> {{ description_assignment.name }}</p>
-
-		{% if all_problems|length == 0 %}
-			<p style="text-align: center;">Nothing to show...</p>
-		{% endif %}
-
-		<table class="sharif_table">
-			<thead>
-			<tr>
-				<th rowspan="2">#</th>
-				<th rowspan="2">Problem</th>
-				<th rowspan="2">Score</th>
-				<th rowspan="2">Upload<br>Only</th>
-			</tr>
-			</thead>
-			{% for one_problem in all_problems %}
-				<tr{{ problem.id == one_problem.id ? ' class="hl"' }}>
-					<td>{{ one_problem.id }}</td>
-					<td>
-						<a dir="auto" href="{{ site_url("problems/#{description_assignment.id}/#{one_problem.id}") }}">{{ one_problem.name }}</a>
-					</td>
-					<td>{{ one_problem.score }}</td>
-					<td>{{ one_problem.is_upload_only ? 'Yes' : 'No' }}</td>
-				</tr>
-			{% endfor %}
-		</table>
-	</div>
-
-	{% if can_submit %}
-	<div class="problems_widget">
-		<p><i class="fa fa-upload fa-lg color11"></i> Submit</p>
-		{{ form_open_multipart('submit') }}
-		<input type="hidden" name="problem" value="{{ problem.id }}"/>
-
-		<p class="input_p">
-			<select id="languages" name="language" class="sharif_input full-width">
-				<option value="0" selected="selected">-- Select Language --</option>
-				{% for l in problem.allowed_languages %}
-					<option value="{{ l }}">{{ l }}</option>
-				{% endfor %}
-			</select>
-		</p>
-		<p class="input_p">
-			<input type="file" id="file" class="sharif_input full-width" name="userfile"/>
-		</p>
-		<p class="input_p">
-			<input type="submit" value="Submit" class="sharif_input"/>
-		</p>
-		</form>
-	</div>
+{% if all_problems|length == 0 %}
+	<p style="text-align: center;">Nothing to show...</p>
+{% else %}
+<br/>
+<table class="sharif_table">
+<thead>
+<tr>
+    <th>#</th>
+	<th>标题</th>
+	<th>提交</th>
+	<th>AC%</th>
+	<th>难度</th>
+	{% if user.level > 0 %}
+	<th>Actions</th>
 	{% endif %}
-
-</div>
+</tr>
+</thead>
+{% for item in all_problems %}
+<tr>
+    <td><a href="{{ site_url('problems/'~item.id) }}">{{ item.id }}</a></td>
+	<td><a href="{{ site_url('problems/'~item.id) }}">{{ item.name }}</a></td>
+	<td>{{ item.total_submits }}</td>
+	<td>{{ item.acpercent }}</td>
+	<td>{{ item.hard }}</td>
+	{% if user.level > 0 %}
+	<td>
+		{% if user.level >= 2 %}
+			<!--<a href="{{ site_url('problems/downloadtestsdesc/'~item.id) }}"><i title="Download Tests and Descriptions" class="fa fa-cloud-download fa-lg color11"></i></a>
+		{% endif %}
+		{% if user.level >= 1 %}
+			<a href="{{ site_url("problems/download_submissions/by_user/#{item.id}") }}"><i title="Download Final Submissions (by user)" class="fa fa-download fa-lg color12"></i></a>
+			<a href="{{ site_url("problems/download_submissions/by_problem/#{item.id}") }}"><i title="Download Final Submissions (by problem)" class="fa fa-download fa-lg color2"></i></a>
+		{% endif %}
+		{% if user.level >= 2 %}
+			<a href="{{ site_url('moss/'~item.id) }}"><i title="Detect Similar Codes" class="fa fa-shield fa-lg color7"></i></a>-->
+			<a href="{{ site_url('problems/edit/'~item.id) }}"><i title="Edit" class="fa fa-pencil fa-lg color3"></i></a>
+			<a href="{{ site_url('problems/delete/'~item.id) }}"><i title="Delete" class="fa fa-times fa-lg color1"></i></a>
+		{% endif %}
+	</td>
+	{% endif %}
+</tr>
+{% endfor %}
+</table>
+{% endif %}
 {% endblock %}  {# main_content #}

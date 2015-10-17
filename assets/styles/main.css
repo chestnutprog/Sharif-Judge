@@ -1062,7 +1062,7 @@ textarea.add_text {
 	width: 410px;
 }
 
-pre, .shj_code {
+pre#editor {
 	background-color: white;
 	-moz-border-radius:5px;
 	-webkit-border-radius:5px;

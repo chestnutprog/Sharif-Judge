@@ -6,6 +6,7 @@
  *     Javascript codes for "All Submissions" and "Final Submissions" pages
  */
 
+
 shj.modal_open = false;
 $(document).ready(function () {
 	$(document).on('click', '#select_all', function (e) {
@@ -33,17 +34,30 @@ $(document).ready(function () {
 				shj_csrf_token: shj.csrf_token
 			},
 			success: function (data) {
-				if (type == 'code')
-					 data.text = shj.html_encode(data.text);
-				$('.modal_inside').html('<pre class="code-column">'+data.text+'</pre>');
+                $('.modal_inside').html('<pre id="editor">'+data.text+'</pre>');
 				$('.modal_inside').prepend('<p><code>'+data.file_name+' | Submit ID: '+row.data('s')+' | Username: '+row.data('u')+' | Problem: '+row.data('p')+'</code></p>');
-				if (type == 'code'){
-					$('pre.code-column').snippet(data.lang, {style: shj.color_scheme});
-				}
-				else
-					$('pre.code-column').addClass('shj_code');
-			}
-		});
+                if (type == 'code') {
+                    $('.modal_inside').html('<div id="editor"></div>');
+				    $('.modal_inside').prepend('<p><code>'+data.file_name+' | Submit ID: '+row.data('s')+' | Username: '+row.data('u')+' | Problem: '+row.data('p')+'</code></p>');
+                    var myCodeMirror = CodeMirror(document.getElementById('editor'),{
+                        lineNumbers:true,
+                        value:data.text,
+                        mode:data.lang,
+                        version:data.version,
+                        theme:'mdn-like',
+                        readOnly:true
+                    });
+                }
+                /*if (type == 'code') {
+                                    var editor = ace.edit("editor");
+                editor.setTheme("ace/theme/xcode");
+                    editor.getSession().setMode("ace/mode/"+data.lang);
+                editor.setValue(data.text); 
+                editor.setReadOnly(true); 
+                editor.resize();
+                }*/
+            }
+        });
 		if (!shj.modal_open) {
 			shj.modal_open = true;
 			$('#shj_modal').reveal(
@@ -59,7 +73,6 @@ $(document).ready(function () {
 				}
 			);
 		}
-
 	});
 	$(".shj_rejudge").attr('title', 'Rejudge');
 	$(".shj_rejudge").click(function () {

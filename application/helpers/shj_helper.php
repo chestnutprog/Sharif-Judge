@@ -81,6 +81,7 @@ if ( ! function_exists('filetype_to_extension'))
 			case 'java': return 'java';
 			case 'zip': return 'zip';
 			case 'pdf': return 'pdf';
+            case 'fpc': return 'pas';
 			default: return FALSE;
 		}
 	}
@@ -99,11 +100,12 @@ if ( ! function_exists('filetype_to_language'))
 		switch ($file_type) {
 			case 'c': return 'C';
 			case 'cpp': return 'C++';
-			case 'py2': return 'Py 2';
-			case 'py3': return 'Py 3';
+			case 'py2': return 'Python 2';
+			case 'py3': return 'Python 3';
 			case 'java': return 'Java';
 			case 'zip': return 'Zip';
 			case 'pdf': return 'PDF';
+            case 'fpc': return 'Free Pascal';
 			default: return FALSE;
 		}
 	}

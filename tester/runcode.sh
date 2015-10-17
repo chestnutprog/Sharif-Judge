@@ -15,43 +15,36 @@ shift
 TIMELIMITINT=$1
 shift
 
-IN=$1
+PROBLEMPATH=$1
 shift
+
 
 # The Command:
 CMD=$@
-
+echo $CMD>>err
 # detecting existence of timeout
-TIMEOUT_EXISTS=true
-hash timeout 2>/dev/null || TIMEOUT_EXISTS=false
 
 
-if [ $EXT == "py2" ]; then
-        mem=$(pid=$(python2 >/dev/null 2>/dev/null & echo $!) && ps -p $pid -o vsz=; kill $pid >/dev/null 2>/dev/null;)
-        MEMLIMIT=$((MEMLIMIT+mem+5000))
-elif [ $EXT == "py3" ]; then
-        mem=$(pid=$(python3 >/dev/null 2>/dev/null & echo $!) && ps -p $pid -o vsz=; kill $pid >/dev/null 2>/dev/null;)
-        MEMLIMIT=$((MEMLIMIT+mem+5000))
-fi
+#if [ $EXT == "py2" ]; then
+#        mem=$(pid=$(python2 >/dev/null 2>/dev/null & echo $!) && ps -p $pid -o vsz=; kill $pid >/dev/null 2>/dev/null;)
+#        MEMLIMIT=$((MEMLIMIT+mem+5000))
+#elif [ $EXT == "py3" ]; then
+#        mem=$(pid=$(python3 >/dev/null 2>/dev/null & echo $!) && ps -p $pid -o vsz=; kill $pid >/dev/null 2>/dev/null;)
+#        MEMLIMIT=$((MEMLIMIT+mem+5000))
+#fi
 
 
 # Imposing memory limit with ulimit
-if [ "$EXT" != "java" ]; then
-	ulimit -v $((MEMLIMIT+10000))
-	ulimit -m $((MEMLIMIT+10000))
-	ulimit -s $((MEMLIMIT+10000))
-fi
+#if [ "$EXT" != "java" ]; then
+#	ulimit -v $((MEMLIMIT+10000))
+#	ulimit -m $((MEMLIMIT+10000))
+#	ulimit -s $((MEMLIMIT+10000))
+#fi
 
 # Imposing time limit with ulimit
-ulimit -t $TIMELIMITINT
-
-if $TIMEOUT_EXISTS; then
-	# Run the command with REAL time limit of TIMELIMITINT*2
-	timeout -s9 $((TIMELIMITINT*2)) $CMD <$IN >out 2>err
-else
-	# Run the command
-	$CMD <$IN >out 2>err	
-fi
+#ulimit -t $TIMELIMITINT
+./judge.py $TIMELIMIT $MEMLIMIT $PROBLEMPATH "$CMD" >err 2>err
+#sleep 20
 # You can run submitted codes as another user:
 #
 # if $TIMEOUT_EXISTS; then

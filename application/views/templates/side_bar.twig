@@ -8,63 +8,69 @@
 		<li class="color-dashboard{{ selected=='dashboard' ? ' selected' }}">
 			<a href="{{ site_url('dashboard') }}">
 				<i class="fa fa-dashboard fa-lg"></i>
-				<span class="sidebar_text">Dashboard</span>
+				<span class="sidebar_text">概览</span>
 			</a>
 		</li>
 		{% if user.level == 3 %}
 		<li class="color-settings{{ selected=='settings' ? ' selected' }}">
 			<a href="{{ site_url('settings') }}">
 				<i class="fa fa-gear fa-lg"></i>
-				<span class="sidebar_text">Settings</span>
+				<span class="sidebar_text">设置</span>
 			</a>
 		</li>
 		<li class="color-users{{ selected=='users' ? ' selected' }}">
 			<a href="{{ site_url('users') }}">
 				<i class="fa fa-users fa-lg"></i>
-				<span class="sidebar_text">Users</span>
+				<span class="sidebar_text">用户</span>
 			</a>
 		</li>
 		{% endif %}
 		<li class="color-notifications{{ selected=='notifications' ? ' selected' }}">
 			<a href="{{ site_url('notifications') }}">
 				<i class="fa fa-bell fa-lg"></i>
-				<span class="sidebar_text">Notifications</span>
+				<span class="sidebar_text">通知</span>
 			</a>
 		</li>
-		<li class="color-assignments{{ selected=='assignments' ? ' selected' }}">
+		<!--<li class="color-assignments{{ selected=='assignments' ? ' selected' }}">
 			<a href="{{ site_url('assignments') }}">
 				<i class="fa fa-folder-open fa-lg"></i>
-				<span class="sidebar_text">Assignments</span>
+				<span class="sidebar_text">比赛</span>-->
 			</a>
 		</li>
 		<li class="color-problems{{ selected=='problems' ? ' selected' }}">
 			<a href="{{ site_url('problems') }}">
 				<i class="fa fa-puzzle-piece fa-lg"></i>
-				<span class="sidebar_text">Problems</span>
+				<span class="sidebar_text">试题</span>
 			</a>
 		</li>
-		<li class="color-submit{{ selected=='submit' ? ' selected' }}">
+		<!--<li class="color-submit{{ selected=='submit' ? ' selected' }}">
 			<a href="{{ site_url('submit') }}">
 				<i class="fa fa-location-arrow fa-lg"></i>
-				<span class="sidebar_text">Submit</span>
+				<span class="sidebar_text">提交</span>
 			</a>
-		</li>
-		<li class="color-final_submissions{{ selected=='final_submissions' ? ' selected' }}">
+		</li>-->
+		<!--<li class="color-final_submissions{{ selected=='final_submissions' ? ' selected' }}">
 			<a href="{{ site_url('submissions/final') }}">
 				<i class="fa fa-map-marker fa-lg"></i>
-				<span class="sidebar_text">Final Submissions</span>
+				<span class="sidebar_text">最终提交</span>-->
 			</a>
 		</li>
 		<li class="color-all_submissions{{ selected=='all_submissions' ? ' selected' }}">
 			<a href="{{ site_url('submissions/all') }}">
 				<i class="fa fa-bars fa-lg"></i>
-				<span class="sidebar_text">All Submissions</span>
+				<span class="sidebar_text">所有提交</span>
+			</a>
+		</li>
+		<!--<li class="color-scoreboard{{ selected=='scoreboard' ? ' selected' }}">
+			<a href="{{ site_url('scoreboard') }}">
+				<i class="fa fa-star fa-lg"></i>
+				<span class="sidebar_text">排行榜</span>-->
 			</a>
 		</li>
 		<li class="color-scoreboard{{ selected=='scoreboard' ? ' selected' }}">
-			<a href="{{ site_url('scoreboard') }}">
+			<a href="{{ site_url('wall') }}">
 				<i class="fa fa-star fa-lg"></i>
-				<span class="sidebar_text">Scoreboard</span>
+				<span class="sidebar_text">翻WALL</span>
 			</a>
 		</li>
 	</ul>

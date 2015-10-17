@@ -13,7 +13,7 @@ class User extends CI_Model
 	public $selected_assignment;
 	public $level;
 	public $email;
-
+    public $total_submits;
 
 	public function __construct()
 	{
@@ -23,12 +23,12 @@ class User extends CI_Model
 			return;
 
 		$user = $this->db
-			->select('selected_assignment, role, email')
+			->select('selected_assignment, role, email, total_submits')
 			->get_where('users', array('username' => $this->username))
 			->row();
 
 		$this->email = $user->email;
-
+        $this->total_submits = $user->total_submits;
 		$query = $this->db->get_where('assignments', array('id' => $user->selected_assignment));
 		if ($query->num_rows() != 1)
 			$this->selected_assignment = array(

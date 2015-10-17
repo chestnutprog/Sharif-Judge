@@ -24,13 +24,13 @@ class Submissions extends CI_Controller
 		if ( ! $this->session->userdata('logged_in')) // if not logged in
 			redirect('login');
 		$this->load->model('submit_model');
-		$this->problems = $this->assignment_model->all_problems($this->user->selected_assignment['id']);
+		//$this->problems = $this->assignment_model->all_problems();
 
 		$input = $this->uri->uri_to_assoc();
 		$this->filter_user = $this->filter_problem = NULL;
 		$this->page_number = 1;
 		if (array_key_exists('user', $input) && $input['user'])
-			if ($this->user->level > 0) // students are not able to filter submissions by user
+			if ($this->user->level > -1) // students are not able to filter submissions by user
 				$this->filter_user = $this->form_validation->alpha_numeric($input['user'])?$input['user']:NULL;
 		if (array_key_exists('problem', $input) && $input['problem'])
 			$this->filter_problem = is_numeric($input['problem'])?$input['problem']:NULL;
@@ -79,15 +79,15 @@ class Submissions extends CI_Controller
 		$sheet->fromArray(array('Problem Filter:', $this->filter_problem?$this->filter_problem:'No filter'), null, 'A4', true);
 
 		// Prepare header
-		if ($this->user->level === 0)
-			$header=array('Final','Problem','Submit Time','Score','Delay (HH:MM)','Coefficient','Final Score','Language','Status');
-		else{
+		//if ($this->user->level === 0)
+		//	$header=array('Final','Problem','Submit Time','Score','Delay (HH:MM)','Coefficient','Final Score','Language','Status');
+//		else{
 			$header=array('Final','Submit ID','Username','Name','Problem','Submit Time','Score','Delay (HH:MM)','Coefficient','Final Score','Language','Status');
 			if ($view === 'final'){
 				array_unshift($header, "#2");
 				array_unshift($header, "#1");
 			}
-		}
+//		}
 
 		// Add header to document
 		$sheet->fromArray($header, null, 'A6', true);
@@ -140,7 +140,7 @@ class Submissions extends CI_Controller
 				$final_score = ceil($pre_score*$item['coefficient']/100);
 
 
-			if ($this->user->level === 0)
+			/*if ($this->user->level === 0)
 				$row = array(
 					$checked,
 					$item['problem'].' ('.$pi['name'].')',
@@ -151,8 +151,8 @@ class Submissions extends CI_Controller
 					$final_score,
 					filetype_to_language($item['file_type']),
 					$item['status'],
-				);
-			else {
+				);*/
+			//else {
 				$row = array(
 					$checked,
 					$item['submit_id'],
@@ -171,7 +171,7 @@ class Submissions extends CI_Controller
 					array_unshift($row,$j);
 					array_unshift($row,$i);
 				}
-			}
+			//}
 			array_push($rows, $row);
 		}
 
@@ -317,13 +317,15 @@ class Submissions extends CI_Controller
 
 	public function all()
 	{
-
 		if ( ! is_numeric($this->page_number))
 			show_404();
 
 		if ($this->page_number < 1)
 			show_404();
-
+        header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); 
+        header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT"); 
+        header("Cache-Control: no-cache, must-revalidate"); 
+        header("Pramga: no-cache"); 
 		$config = array(
 			'base_url' => site_url('submissions/all'.($this->filter_user?'/user/'.$this->filter_user:'').($this->filter_problem?'/problem/'.$this->filter_problem:'')),
 			'cur_page' => $this->page_number,
@@ -337,15 +339,15 @@ class Submissions extends CI_Controller
 			$config['per_page'] = $config['total_rows'];
 		$this->load->library('shj_pagination', $config);
 
-		$submissions = $this->submit_model->get_all_submissions($this->user->selected_assignment['id'], $this->user->level, $this->user->username, $this->page_number, $this->filter_user, $this->filter_problem);
+		$submissions = $this->submit_model->get_all_submissions(NULL, $this->user->level, $this->user->username, $this->page_number, $this->filter_user, $this->filter_problem);
 
 		$names = $this->user_model->get_names();
-
 		foreach ($submissions as &$item)
 		{
 			$item['name'] = $names[$item['username']];
 			$item['fullmark'] = ($item['pre_score'] == 10000);
-			$item['pre_score'] = ceil($item['pre_score']*$this->problems[$item['problem']]['score']/10000);
+			//$item['pre_score'] = ceil($item['pre_score']*$this->problems[$item['problem']]['score']/10000);
+            $item['pre_score'] = ceil($item['pre_score']/100);
 			$item['delay'] = strtotime($item['time'])-strtotime($this->user->selected_assignment['finish_time']);
 			$item['language'] = filetype_to_language($item['file_type']);
 			if ($item['coefficient'] === 'error')
@@ -364,7 +366,6 @@ class Submissions extends CI_Controller
 			'filter_problem' => $this->filter_problem,
 			'pagination' => $this->shj_pagination->create_links(),
 		);
-
 		$this->twig->display('pages/submissions.twig', $data);
 	}
 
@@ -385,7 +386,7 @@ class Submissions extends CI_Controller
 			show_404();
 
 		// Students cannot change their final submission after finish_time + extra_time
-		if ($this->user->level === 0)
+		/*if ($this->user->level === 0)
 			if ( shj_now() > strtotime($this->user->selected_assignment['finish_time'])+$this->user->selected_assignment['extra_time'])
 			{
 				$json_result = array(
@@ -396,6 +397,8 @@ class Submissions extends CI_Controller
 				echo json_encode($json_result);
 				return;
 			}
+            */
+        
 
 		$this->form_validation->set_rules('submit_id', 'Submit ID', 'integer|greater_than[0]');
 		$this->form_validation->set_rules('problem', 'problem', 'integer|greater_than[0]');
@@ -405,11 +408,18 @@ class Submissions extends CI_Controller
 		{
 			$username = $this->input->post('username');
 			if ($this->user->level === 0)
-				$username = $this->user->username;
-
+                if($this->user->username != $username){
+                $json_result = array(
+					'done' => 0,
+					'message' => ' You cannot change other\'s final submissions.'
+				);
+				$this->output->set_header('Content-Type: application/json; charset=utf-8');
+				echo json_encode($json_result);
+				return;
+            }
 			$res = $this->submit_model->set_final_submission(
 				$username,
-				$this->user->selected_assignment['id'],
+				//$this->user->selected_assignment['id'],
 				$this->input->post('problem'),
 				$this->input->post('submit_id')
 			);
@@ -451,15 +461,14 @@ class Submissions extends CI_Controller
 			show_404();
 		$this->form_validation->set_rules('type','type','callback__check_type');
 		$this->form_validation->set_rules('username','username','required|min_length[3]|max_length[20]|alpha_numeric');
-		$this->form_validation->set_rules('assignment','assignment','integer|greater_than[0]');
+		//$this->form_validation->set_rules('assignment','assignment','integer|greater_than[0]');
 		$this->form_validation->set_rules('problem','problem','integer|greater_than[0]');
 		$this->form_validation->set_rules('submit_id','submit_id','integer|greater_than[0]');
-
 		if($this->form_validation->run())
 		{
 			$submission = $this->submit_model->get_submission(
 				$this->input->post('username'),
-				$this->input->post('assignment'),
+				//$this->input->post('assignment'),
 				$this->input->post('problem'),
 				$this->input->post('submit_id')
 			);
@@ -468,35 +477,49 @@ class Submissions extends CI_Controller
 
 			$type = $this->input->post('type'); // $type is 'code', 'result', or 'log'
 
-			if ($this->user->level === 0 && $type === 'log')
-				show_404();
-
-			if ($this->user->level === 0 && $this->user->username != $submission['username'])
-				exit('Don\'t try to see submitted codes :)');
-
 			if ($type === 'result')
-				$file_path = rtrim($this->settings_model->get_setting('assignments_root'),'/').
-					"/assignment_{$submission['assignment']}/p{$submission['problem']}/{$submission['username']}/result-{$submission['submit_id']}.html";
+				$file_path = rtrim($this->settings_model->get_setting('problems_root'),'/').
+					"/p{$submission['problem']}/{$submission['username']}/result-{$submission['submit_id']}.html";
 			elseif ($type === 'code')
-				$file_path = rtrim($this->settings_model->get_setting('assignments_root'),'/').
-					"/assignment_{$submission['assignment']}/p{$submission['problem']}/{$submission['username']}/{$submission['file_name']}.".filetype_to_extension($submission['file_type']);
+				$file_path = rtrim($this->settings_model->get_setting('problems_root'),'/').
+					"/p{$submission['problem']}/{$submission['username']}/{$submission['file_name']}.".filetype_to_extension($submission['file_type']);
 			elseif ($type === 'log')
-				$file_path = rtrim($this->settings_model->get_setting('assignments_root'),'/').
-					"/assignment_{$submission['assignment']}/p{$submission['problem']}/{$submission['username']}/log-{$submission['submit_id']}";
+				$file_path = rtrim($this->settings_model->get_setting('problems_root'),'/').
+					"/p{$submission['problem']}/{$submission['username']}/log-{$submission['submit_id']}";
 			else
 				$file_path = '/nowhere'; // This line is never reached!
-
 			$result = array(
 				'file_name' => $submission['main_file_name'].'.'.filetype_to_extension($submission['file_type']),
-				'text' => file_exists($file_path)?file_get_contents($file_path):'File Not Found'
+				'text' => mb_convert_encoding(file_exists($file_path)?file_get_contents($file_path):'File Not Found',"UTF-8","UTF-8,GBK"),
 			);
 
 			if ($type === 'code') {
 				$result['lang'] = $submission['file_type'];
-				if ($result['lang'] == 'py2' || $result['lang'] == 'py3')
-					$result['lang'] = 'python';
+				if ($result['lang'] == 'py2'){
+					$result['lang'] = 'text/x-python';
+                    $result['version'] = '2';
+                }
+                if ($result['lang'] == 'py3'){
+					$result['lang'] = 'text/x-python';
+                    $result['version'] = '3';
+                }
+                if ($result['lang'] == 'fpc')
+					$result['lang'] = 'text/x-pascal';
+                if ($result['lang'] == 'c')
+					$result['lang'] = 'text/x-csrc';
+                if ($result['lang'] == 'cpp')
+					$result['lang'] = 'text/x-c++src';
+                if ($result['lang'] == 'java')
+					$result['lang'] = 'text/x-java';
 			}
-
+            if ($this->user->level === 0 && $type === 'log'){
+				$result['file_name'] = '雅蠛蝶';
+                $result['text'] = '您无权查看此页';
+            }
+			if ($this->user->level === 0 && $this->user->username != $submission['username']){
+				$result['file_name'] = '雅蠛蝶';
+                $result['text'] = '您无权查看此页';
+            }
 			$this->output->set_content_type('application/json')->set_output(json_encode($result));
 
 		}
@@ -531,8 +554,8 @@ class Submissions extends CI_Controller
 		if ($this->user->level === 0 && $this->user->username != $submission['username'])
 			exit('Don\'t try to see submitted codes :)');
 
-		$file_path = rtrim($this->settings_model->get_setting('assignments_root'),'/').
-		"/assignment_{$submission['assignment']}/p{$submission['problem']}/{$submission['username']}/{$submission['file_name']}.".filetype_to_extension($submission['file_type']);
+		$file_path = rtrim($this->settings_model->get_setting('problems_root'),'/').
+		"/p{$submission['problem']}/{$submission['username']}/{$submission['file_name']}.".filetype_to_extension($submission['file_type']);
 
 		$this->load->helper('download');
 		force_download(
